@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Game Sales EDA</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 8px 15px; margin: 5px; cursor: pointer; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .chart-container { position: relative; height: 400px; margin: 20px 0; }
+        .note { background: #f0f0f0; padding: 10px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Video Game Sales Exploratory Data Analysis</h1>
+    
+    <div class="section">
+        <h2>1. Data Load</h2>
+        <input type="file" id="fileInput" accept=".csv">
+        <button onclick="loadData()">Load CSV Data</button>
+    </div>
+
+    <div class="section">
+        <h2>2. Data Overview</h2>
+        <button onclick="showOverview()">Show Data Overview</button>
+        <div id="overview"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. Missing Values Analysis</h2>
+        <button onclick="showMissingValues()">Analyze Missing Values</button>
+        <div id="missingValues"></div>
+    </div>
+
+    <div class="section">
+        <h2>4. Statistical Summary</h2>
+        <button onclick="showStatsSummary()">Generate Stats Summary</button>
+        <div id="statsSummary"></div>
+    </div>
+
+    <div class="section">
+        <h2>5. Visualizations</h2>
+        <button onclick="createVisualizations()">Create Visualizations</button>
+        <div id="visualizations"></div>
+    </div>
+
+    <div class="section">
+        <h2>6. Export Results</h2>
+        <button onclick="exportCSV()">Export CSV</button>
+        <button onclick="exportJSON()">Export JSON Summary</button>
+    </div>
+
+    <div class="note">
+        <strong>Deployment Note:</strong> Create public GitHub repo, commit index.html & app.js, 
+        enable GitHub Pages (main branch/root folder), and test the live URL.
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
