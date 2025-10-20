@@ -7,58 +7,218 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .section { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
-        button { padding: 8px 15px; margin: 5px; cursor: pointer; }
-        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .chart-container { position: relative; height: 400px; margin: 20px 0; }
-        .note { background: #f0f0f0; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .section { 
+            margin-bottom: 30px; 
+            padding: 20px; 
+            border: 1px solid #e0e0e0; 
+            border-radius: 8px; 
+            background: #fff; 
+        }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+        h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        button { 
+            padding: 10px 20px; 
+            margin: 5px; 
+            cursor: pointer; 
+            background: #3498db; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            font-size: 14px; 
+            transition: background 0.3s; 
+        }
+        button:hover { background: #2980b9; }
+        button:disabled { background: #bdc3c7; cursor: not-allowed; }
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            margin-top: 15px; 
+            font-size: 14px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            text-align: left; 
+        }
+        th { 
+            background: #34495e; 
+            color: white; 
+            font-weight: 600; 
+        }
+        tr:nth-child(even) { background: #f8f9fa; }
+        tr:hover { background: #e8f4f8; }
+        .chart-container { 
+            position: relative; 
+            height: 400px; 
+            margin: 20px 0; 
+            background: white; 
+            padding: 15px; 
+            border-radius: 5px; 
+            border: 1px solid #e0e0e0; 
+        }
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 15px; 
+            margin-top: 15px; 
+        }
+        .stat-card { 
+            background: #ecf0f1; 
+            padding: 15px; 
+            border-radius: 5px; 
+            border-left: 4px solid #3498db; 
+        }
+        .loading { 
+            display: none; 
+            text-align: center; 
+            padding: 20px; 
+            color: #7f8c8d; 
+        }
+        .error { 
+            background: #e74c3c; 
+            color: white; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin: 10px 0; 
+        }
+        .success { 
+            background: #2ecc71; 
+            color: white; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin: 10px 0; 
+        }
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-input-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #9b59b6;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .file-input-label:hover {
+            background: #8e44ad;
+        }
+        .controls { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            margin: 15px 0; 
+            align-items: center; 
+        }
+        .note { 
+            background: #fff8e1; 
+            padding: 15px; 
+            border-radius: 5px; 
+            border-left: 4px solid #ffc107; 
+            margin: 20px 0; 
+        }
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .section { padding: 15px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .controls { flex-direction: column; align-items: stretch; }
+            button { width: 100%; margin: 5px 0; }
+        }
     </style>
 </head>
 <body>
-    <h1>Video Game Sales Exploratory Data Analysis</h1>
-    
-    <div class="section">
-        <h2>1. Data Load</h2>
-        <input type="file" id="fileInput" accept=".csv">
-        <button onclick="loadData()">Load CSV Data</button>
-    </div>
+    <div class="container">
+        <h1>🎮 Video Game Sales - Exploratory Data Analysis</h1>
+        
+        <div class="section">
+            <h2>1. Data Load</h2>
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" accept=".csv">
+                <label for="fileInput" class="file-input-label">📁 Choose CSV File</label>
+            </div>
+            <div class="controls">
+                <button onclick="loadData()" id="loadBtn">📥 Load CSV Data</button>
+                <button onclick="clearData()" id="clearBtn" disabled>🗑️ Clear Data</button>
+            </div>
+            <div id="loadStatus"></div>
+        </div>
 
-    <div class="section">
-        <h2>2. Data Overview</h2>
-        <button onclick="showOverview()">Show Data Overview</button>
-        <div id="overview"></div>
-    </div>
+        <div class="section">
+            <h2>2. Data Overview</h2>
+            <div class="controls">
+                <button onclick="showOverview()" id="overviewBtn" disabled>📊 Show Data Overview</button>
+            </div>
+            <div id="overview"></div>
+        </div>
 
-    <div class="section">
-        <h2>3. Missing Values Analysis</h2>
-        <button onclick="showMissingValues()">Analyze Missing Values</button>
-        <div id="missingValues"></div>
-    </div>
+        <div class="section">
+            <h2>3. Missing Values Analysis</h2>
+            <div class="controls">
+                <button onclick="showMissingValues()" id="missingBtn" disabled>🔍 Analyze Missing Values</button>
+            </div>
+            <div id="missingValues"></div>
+        </div>
 
-    <div class="section">
-        <h2>4. Statistical Summary</h2>
-        <button onclick="showStatsSummary()">Generate Stats Summary</button>
-        <div id="statsSummary"></div>
-    </div>
+        <div class="section">
+            <h2>4. Statistical Summary</h2>
+            <div class="controls">
+                <button onclick="showStatsSummary()" id="statsBtn" disabled>📈 Generate Stats Summary</button>
+            </div>
+            <div id="statsSummary"></div>
+        </div>
 
-    <div class="section">
-        <h2>5. Visualizations</h2>
-        <button onclick="createVisualizations()">Create Visualizations</button>
-        <div id="visualizations"></div>
-    </div>
+        <div class="section">
+            <h2>5. Visualizations</h2>
+            <div class="controls">
+                <button onclick="createAllVisualizations()" id="vizBtn" disabled>📊 Create All Visualizations</button>
+                <button onclick="createPlatformChart()" id="platformBtn" disabled>🎮 Platform Distribution</button>
+                <button onclick="createGenreChart()" id="genreBtn" disabled>🎭 Genre Distribution</button>
+                <button onclick="createSalesChart()" id="salesBtn" disabled>💰 Sales Analysis</button>
+            </div>
+            <div id="visualizations"></div>
+        </div>
 
-    <div class="section">
-        <h2>6. Export Results</h2>
-        <button onclick="exportCSV()">Export CSV</button>
-        <button onclick="exportJSON()">Export JSON Summary</button>
-    </div>
+        <div class="section">
+            <h2>6. Export Results</h2>
+            <div class="controls">
+                <button onclick="exportCSV()" id="exportCsvBtn" disabled>💾 Export CSV</button>
+                <button onclick="exportJSON()" id="exportJsonBtn" disabled>📄 Export JSON Summary</button>
+            </div>
+        </div>
 
-    <div class="note">
-        <strong>Deployment Note:</strong> Create public GitHub repo, commit index.html & app.js, 
-        enable GitHub Pages (main branch/root folder), and test the live URL.
+        <div class="note">
+            <strong>🚀 Deployment Note:</strong> Create public GitHub repo, commit index.html & app.js, 
+            enable GitHub Pages (main branch/root folder), and test the live URL.
+            <br><strong>📁 Dataset:</strong> vgsales.csv with columns: Rank, Name, Platform, Year, Genre, Publisher, NA_Sales, EU_Sales, JP_Sales, Other_Sales, Global_Sales
+        </div>
+
+        <div class="loading" id="loading">⏳ Processing data... Please wait.</div>
     </div>
 
     <script src="app.js"></script>
